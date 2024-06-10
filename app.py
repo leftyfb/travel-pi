@@ -107,7 +107,6 @@ def index():
                     margin-bottom: 10px;
                     display: flex;
                     align-items: center;
-                    flex-wrap: wrap;
                 }
                 .message {
                     padding: 10px;
@@ -129,7 +128,7 @@ def index():
                     color: red;
                     cursor: pointer;
                     font-size: 18px;
-                    margin-right: 5px;
+                    margin-right: 10px;
                 }
                 .icon-btn:hover {
                     color: darkred;
@@ -159,15 +158,14 @@ def index():
                 }
                 @media (max-width: 600px) {
                     .refresh-container {
-                        flex-direction: column;
-                        align-items: flex-start;
+                        flex-direction: row;
+                        justify-content: flex-start;
+                    }
+                    .refresh-container label {
+                        margin-right: 10px;
                     }
                     .refresh-btn {
                         margin-left: 0;
-                        margin-top: 10px;
-                    }
-                    .icon-btn {
-                        margin-bottom: 10px;
                     }
                 }
             </style>
@@ -202,6 +200,7 @@ def index():
     
     dropdowndisplay += """
                 </select>
+				</br>
                 <input type="submit" class="small-btn" value="Connect">
             </form>
             <form id="refresh-form" action="/refresh" method="post" style="display:none;">
