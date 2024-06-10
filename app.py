@@ -56,6 +56,7 @@ def get_ip_address(interface):
 @app.route('/')
 def index():
     global messages, wifi_ssids
+    wifi_ssids = get_wifi_networks()
     known_networks = get_known_networks()
     active_connections = get_active_connections()
 
@@ -200,7 +201,7 @@ def index():
     
     dropdowndisplay += """
                 </select>
-				</br>
+                </br>
                 <input type="submit" class="small-btn" value="Connect">
             </form>
             <form id="refresh-form" action="/refresh" method="post" style="display:none;">
@@ -275,16 +276,19 @@ def index():
 @app.route('/submit', methods=['POST'])
 def submit():
     global messages
-    ssid = request.form['ssid']
-    password = request.form['password']
-    known_ssid = request.form['known_ssid']
+    ssid = request.form.get('ssid')
+    password = request.form.get('password')
+    known_ssid = request.form.get('known_ssid')
     
-    if known_ssid:
+    if known_ssid and known_ssid != "":
         connection_command = ["nmcli", "--colors", "no", "connection", "up", known_ssid]
-    else:
+    elif ssid and ssid != "":
         connection_command = ["nmcli", "--colors", "no", "device", "wifi", "connect", ssid]
-        if password:
-            connection_command += ["password", f'"{password}"']  # Using quotes around the password
+        if password and password != "":
+            connection_command += ["password", f'"{password}"']
+    else:
+        messages.append("Error: No SSID or known network selected.")
+        return redirect(url_for('index'))
 
     result, error = run_command(connection_command)
     if result:
