@@ -65,6 +65,7 @@ def index():
         <head>
             <title>WiFi Control</title>
             <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <style>
                 body {
                     font-family: Arial, sans-serif;
@@ -86,6 +87,7 @@ def index():
                     margin-bottom: 10px;
                     width: 100%;
                     max-width: 400px;
+                    box-sizing: border-box;
                 }
                 input[type="submit"], button {
                     background-color: #4CAF50;
@@ -105,12 +107,14 @@ def index():
                     margin-bottom: 10px;
                     display: flex;
                     align-items: center;
+                    flex-wrap: wrap;
                 }
                 .message {
                     padding: 10px;
                     background-color: #f9f9f9;
                     border-left: 6px solid #4CAF50;
                     margin-bottom: 10px;
+                    word-break: break-word;
                 }
                 .message.error {
                     border-left-color: #f44336;
@@ -125,7 +129,7 @@ def index():
                     color: red;
                     cursor: pointer;
                     font-size: 18px;
-                    margin-right: 10px;
+                    margin-right: 5px;
                 }
                 .icon-btn:hover {
                     color: darkred;
@@ -146,12 +150,25 @@ def index():
                     align-items: center;
                 }
                 .reboot-btn, .shutdown-btn {
-                    width: 150px;
-                    margin-right: 10px;
+                    width: 100%;
+                    margin-bottom: 10px;
                     background-color: #FF5722;
                 }
                 .reboot-btn:hover, .shutdown-btn:hover {
                     background-color: #E64A19;
+                }
+                @media (max-width: 600px) {
+                    .refresh-container {
+                        flex-direction: column;
+                        align-items: flex-start;
+                    }
+                    .refresh-btn {
+                        margin-left: 0;
+                        margin-top: 10px;
+                    }
+                    .icon-btn {
+                        margin-bottom: 10px;
+                    }
                 }
             </style>
         </head>
@@ -315,4 +332,3 @@ def shutdown():
 if __name__ == '__main__':
     wifi_ssids = get_wifi_networks()
     app.run(debug=True, host='0.0.0.0', port=80)
-
