@@ -70,11 +70,23 @@ def index():
             <style>
                 body {
                     font-family: Arial, sans-serif;
-                    margin: 20px;
+                    background-color: #f0f0f0;
+                    color: #333;
+                    margin: 0;
+                    padding: 0;
+                }
+                .container {
                     padding: 20px;
+                    max-width: 600px;
+                    margin: auto;
+                    background-color: #fff;
+                    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+                    border-radius: 10px;
+                    margin-top: 20px;
                 }
                 h1, h2 {
                     color: #333;
+                    text-align: center;
                 }
                 form {
                     margin-bottom: 20px;
@@ -82,20 +94,24 @@ def index():
                 label {
                     display: block;
                     margin-bottom: 8px;
+                    color: #555;
                 }
                 select, input[type="password"], input[type="submit"], button {
-                    padding: 8px;
+                    padding: 10px;
                     margin-bottom: 10px;
                     width: 100%;
-                    max-width: 400px;
+                    max-width: 100%;
                     box-sizing: border-box;
+                    border-radius: 5px;
+                    border: 1px solid #ccc;
+                    font-size: 16px;
                 }
                 input[type="submit"], button {
                     background-color: #4CAF50;
                     color: white;
                     border: none;
                     cursor: pointer;
-                    font-size: 14px;
+                    font-size: 16px;
                 }
                 input[type="submit"]:hover, button:hover {
                     background-color: #45a049;
@@ -115,13 +131,14 @@ def index():
                     border-left: 6px solid #4CAF50;
                     margin-bottom: 10px;
                     word-break: break-word;
+                    border-radius: 5px;
                 }
                 .message.error {
                     border-left-color: #f44336;
                 }
                 .small-btn {
-                    padding: 5px 10px;
-                    font-size: 12px;
+                    padding: 10px;
+                    font-size: 16px;
                 }
                 .icon-btn {
                     background: none;
@@ -148,11 +165,13 @@ def index():
                 .refresh-container {
                     display: flex;
                     align-items: center;
+                    justify-content: space-between;
                 }
                 .reboot-btn, .shutdown-btn {
                     width: 100%;
                     margin-bottom: 10px;
                     background-color: #FF5722;
+                    font-size: 16px;
                 }
                 .reboot-btn:hover, .shutdown-btn:hover {
                     background-color: #E64A19;
@@ -168,46 +187,49 @@ def index():
                     .refresh-btn {
                         margin-left: 0;
                     }
+                    .reboot-btn, .shutdown-btn {
+                        width: 100%;
+                    }
                 }
             </style>
         </head>
         <body>
-            <h1>WiFi Control</h1>
-            <form action="/submit" method="post">
-                <div class="refresh-container">
-                    <label for="ssid">Choose a WiFi network:</label>
-                    <button type="submit" form="refresh-form" class="refresh-btn"><i class="fas fa-sync-alt"></i></button>
-                </div>
-                <select name="ssid" id="ssid">
+            <div class="container">
+                <h1>WiFi Control</h1>
+                <form action="/submit" method="post">
+                    <div class="refresh-container">
+                        <label for="ssid">Choose a WiFi network:</label>
+                        <button type="submit" form="refresh-form" class="refresh-btn"><i class="fas fa-sync-alt"></i></button>
+                    </div>
+                    <select name="ssid" id="ssid">
     """
     for ssid in wifi_ssids:
         dropdowndisplay += f"""
-                    <option value="{ssid}">{ssid}</option>
+                        <option value="{ssid}">{ssid}</option>
         """
     
     dropdowndisplay += """
-                </select>
-                <label for="password">Password:</label>
-                <input type="password" name="password"/>
-                <label for="known_ssid">Or connect to a known network:</label>
-                <select name="known_ssid" id="known_ssid">
-                    <option value="">Select a known network</option>
+                    </select>
+                    <label for="password">Password:</label>
+                    <input type="password" name="password"/>
+                    <label for="known_ssid">Or connect to a known network:</label>
+                    <select name="known_ssid" id="known_ssid">
+                        <option value="">Select a known network</option>
     """
     
     for known in known_networks:
         dropdowndisplay += f"""
-                    <option value="{known}">{known}</option>
+                        <option value="{known}">{known}</option>
         """
     
     dropdowndisplay += """
-                </select>
-                </br>
-                <input type="submit" class="small-btn" value="Connect">
-            </form>
-            <form id="refresh-form" action="/refresh" method="post" style="display:none;">
-            </form>
-            <h2>Active Connections</h2>
-            <ul>
+                    </select>
+                    <input type="submit" class="small-btn" value="Connect">
+                </form>
+                <form id="refresh-form" action="/refresh" method="post" style="display:none;">
+                </form>
+                <h2>Active Connections</h2>
+                <ul>
     """
     
     for conn in active_connections:
@@ -215,39 +237,39 @@ def index():
         ip_address = get_ip_address(device)
         if conn_type == '802-11-wireless':  # Display WiFi connections
             dropdowndisplay += f"""
-                <li>
-                    <form action="/disconnect" method="post" style="display:inline;">
-                        <input type="hidden" name="connection" value="{name}">
-                        <button type="submit" class="icon-btn"><i class="fas fa-times-circle"></i></button>
-                    </form>
-                    {name} ({device}) - IP: {ip_address}
-                </li>
+                    <li>
+                        <form action="/disconnect" method="post" style="display:inline;">
+                            <input type="hidden" name="connection" value="{name}">
+                            <button type="submit" class="icon-btn"><i class="fas fa-times-circle"></i></button>
+                        </form>
+                        {name} ({device}) - IP: {ip_address}
+                    </li>
             """
         elif conn_type == 'vpn':  # Display VPN connections
             dropdowndisplay += f"""
-                <li>
-                    <form action="/disconnect" method="post" style="display:inline;">
-                        <input type="hidden" name="connection" value="{name}">
-                        <button type="submit" class="icon-btn"><i class="fas fa-times-circle"></i></button>
-                    </form>
-                    {name} (VPN) - IP: {ip_address}
-                </li>
+                    <li>
+                        <form action="/disconnect" method="post" style="display:inline;">
+                            <input type="hidden" name="connection" value="{name}">
+                            <button type="submit" class="icon-btn"><i class="fas fa-times-circle"></i></button>
+                        </form>
+                        {name} (VPN) - IP: {ip_address}
+                    </li>
             """
         elif conn_type == '802-3-ethernet':  # Display Ethernet connections
             dropdowndisplay += f"""
-                <li>
-                    <form action="/disconnect" method="post" style="display:inline;">
-                        <input type="hidden" name="connection" value="{name}">
-                        <button type="submit" class="icon-btn"><i class="fas fa-times-circle"></i></button>
-                    </form>
-                    {name} ({device}) - IP: {ip_address}
-                </li>
+                    <li>
+                        <form action="/disconnect" method="post" style="display:inline;">
+                            <input type="hidden" name="connection" value="{name}">
+                            <button type="submit" class="icon-btn"><i class="fas fa-times-circle"></i></button>
+                        </form>
+                        {name} ({device}) - IP: {ip_address}
+                    </li>
             """
     
     dropdowndisplay += """
-            </ul>
-            <h2>Logging</h2>
-            <ul>
+                </ul>
+                <h2>Logging</h2>
+                <ul>
     """
     
     for message in messages:
@@ -257,14 +279,15 @@ def index():
         dropdowndisplay += f"<li class='{message_class}'>{message}</li>"
     
     dropdowndisplay += """
-            </ul>
-            <div style="margin-top: 30px;">
-                <form action="/reboot" method="post" style="display:inline;">
-                    <button type="submit" class="reboot-btn">Reboot</button>
-                </form>
-                <form action="/shutdown" method="post" style="display:inline;">
-                    <button type="submit" class="shutdown-btn">Shutdown</button>
-                </form>
+                </ul>
+                <div style="margin-top: 30px; display: flex; justify-content: space-between;">
+                    <form action="/reboot" method="post" style="display:inline;">
+                        <button type="submit" class="reboot-btn">Reboot</button>
+                    </form>
+                    <form action="/shutdown" method="post" style="display:inline;">
+                        <button type="submit" class="shutdown-btn">Shutdown</button>
+                    </form>
+                </div>
             </div>
         </body>
         </html>
