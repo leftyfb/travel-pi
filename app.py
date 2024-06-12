@@ -1,7 +1,9 @@
-from flask import Flask, request, redirect, url_for
+from flask import Flask, request, redirect, url_for, session, render_template_string
 import subprocess
+import hashlib
 
 app = Flask(__name__)
+app.secret_key = 'your_secret_key_here'
 
 messages = []
 wifi_ssids = []
@@ -53,8 +55,35 @@ def get_ip_address(interface):
                 return ip_address
     return "N/A"
 
+def check_authentication(username, password):
+    # Read credentials from a file
+    with open('/home/leftyfb/travel-pi/credentials.txt', 'r') as file:
+        stored_username, stored_password_hash = file.read().strip().split(',')
+        password_hash = hashlib.md5(password.encode()).hexdigest()
+        return username == stored_username and password_hash == stored_password_hash
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        if check_authentication(username, password):
+            session['logged_in'] = True
+            return redirect(url_for('index'))
+        else:
+            return render_template_string(login_page, error="Invalid credentials")
+    return render_template_string(login_page)
+
+@app.route('/logout')
+def logout():
+    session.pop('logged_in', None)
+    return redirect(url_for('login'))
+
 @app.route('/')
 def index():
+    if not session.get('logged_in'):
+        return redirect(url_for('login'))
+
     global messages, wifi_ssids
     wifi_ssids = get_wifi_networks()
     known_networks = get_known_networks()
@@ -295,6 +324,89 @@ def index():
     messages = []
     return dropdowndisplay
 
+login_page = """
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Login</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .login-container {
+            background-color: #fff;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            width: 300px;
+            text-align: center;
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+        form {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+        }
+        input[type="text"], input[type="password"] {
+            padding: 10px;
+            margin-bottom: 10px;
+            width: 100%;
+            max-width: 100%;
+            box-sizing: border-box;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            font-size: 16px;
+        }
+        input[type="submit"] {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            padding: 10px;
+            width: 100%;
+            border-radius: 5px;
+        }
+        input[type="submit"]:hover {
+            background-color: #45a049;
+        }
+        .error {
+            color: #f44336;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <h1>Login</h1>
+        {% if error %}
+            <div class="error">{{ error }}</div>
+        {% endif %}
+        <form method="post">
+            <label for="username">Username:</label>
+            <input type="text" name="username" id="username" required>
+            <label for="password">Password:</label>
+            <input type="password" name="password" id="password" required>
+            <input type="submit" value="Login">
+        </form>
+    </div>
+</body>
+</html>
+"""
 
 @app.route('/submit', methods=['POST'])
 def submit():
