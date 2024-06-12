@@ -60,6 +60,14 @@ def get_ip_address(interface):
                 return ip_address
     return "N/A"
 
+def get_vpn_ip_address():
+    vpn_interfaces = ["ppp0", "tun0", "tun1"]
+    for iface in vpn_interfaces:
+        ip_address = get_ip_address(iface)
+        if ip_address != "N/A":
+            return ip_address
+    return "N/A"
+
 def check_authentication(username, password):
     # Read credentials from a file
     try:
@@ -286,8 +294,8 @@ def index():
     
     for conn in active_connections:
         name, conn_type, device = conn
-        ip_address = get_ip_address(device)
         if conn_type == '802-11-wireless':  # Display WiFi connections
+            ip_address = get_ip_address(device)
             dropdowndisplay += f"""
                     <li>
                         <form action="/disconnect" method="post" style="display:inline;">
@@ -298,7 +306,7 @@ def index():
                     </li>
             """
         elif conn_type == 'vpn':  # Display VPN connections
-            vpn_ip_address = get_ip_address("ppp0")
+            vpn_ip_address = get_vpn_ip_address()
             dropdowndisplay += f"""
                     <li>
                         <form action="/disconnect" method="post" style="display:inline;">
@@ -309,6 +317,7 @@ def index():
                     </li>
             """
         elif conn_type == '802-3-ethernet':  # Display Ethernet connections
+            ip_address = get_ip_address(device)
             dropdowndisplay += f"""
                     <li>
                         <form action="/disconnect" method="post" style="display:inline;">
