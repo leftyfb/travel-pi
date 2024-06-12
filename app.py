@@ -1,12 +1,17 @@
 from flask import Flask, request, redirect, url_for, session, render_template_string
 import subprocess
 import hashlib
+import os
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key_here'
 
 messages = []
 wifi_ssids = []
+
+# Get the absolute path to the current directory
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+CREDENTIALS_PATH = os.path.join(BASE_DIR, 'credentials.txt')
 
 def run_command(command):
     try:
@@ -57,10 +62,14 @@ def get_ip_address(interface):
 
 def check_authentication(username, password):
     # Read credentials from a file
-    with open('/home/leftyfb/travel-pi/credentials.txt', 'r') as file:
-        stored_username, stored_password_hash = file.read().strip().split(',')
-        password_hash = hashlib.md5(password.encode()).hexdigest()
-        return username == stored_username and password_hash == stored_password_hash
+    try:
+        with open(CREDENTIALS_PATH, 'r') as file:
+            stored_username, stored_password_hash = file.read().strip().split(',')
+            password_hash = hashlib.md5(password.encode()).hexdigest()
+            return username == stored_username and password_hash == stored_password_hash
+    except FileNotFoundError:
+        print(f"Credentials file not found: {CREDENTIALS_PATH}")
+        return False
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
