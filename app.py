@@ -83,7 +83,7 @@ def login():
             return render_template_string(login_page, error="Invalid credentials")
     return render_template_string(login_page)
 
-@app.route('/logout')
+@app.route('/logout', methods=['POST'])
 def logout():
     session.pop('logged_in', None)
     return redirect(url_for('login'))
@@ -205,13 +205,24 @@ def index():
                     align-items: center;
                     justify-content: space-between;
                 }
-                .reboot-btn, .shutdown-btn {
-                    width: 100%;
-                    margin-bottom: 10px;
-                    background-color: #FF5722;
-                    font-size: 16px;
+                .action-buttons {
+                    display: flex;
+                    justify-content: space-between;
+                    gap: 20px;
+                    margin-top: 30px;
                 }
-                .reboot-btn:hover, .shutdown-btn:hover {
+                .action-button {
+                    width: 100%;
+                    background-color: #FF5722;
+                    color: white;
+                    padding: 10px;
+                    border: none;
+                    border-radius: 5px;
+                    font-size: 16px;
+                    cursor: pointer;
+                    text-align: center;
+                }
+                .action-button:hover {
                     background-color: #E64A19;
                 }
                 @media (max-width: 600px) {
@@ -225,7 +236,10 @@ def index():
                     .refresh-btn {
                         margin-left: 0;
                     }
-                    .reboot-btn, .shutdown-btn {
+                    .action-buttons {
+                        flex-direction: column;
+                    }
+                    .action-button {
                         width: 100%;
                     }
                 }
@@ -318,12 +332,15 @@ def index():
     
     dropdowndisplay += """
                 </ul>
-                <div style="margin-top: 30px; display: flex; justify-content: space-between;">
+                <div class="action-buttons">
                     <form action="/reboot" method="post" style="display:inline;">
-                        <button type="submit" class="reboot-btn">Reboot</button>
+                        <button type="submit" class="action-button">Reboot</button>
                     </form>
                     <form action="/shutdown" method="post" style="display:inline;">
-                        <button type="submit" class="shutdown-btn">Shutdown</button>
+                        <button type="submit" class="action-button">Shutdown</button>
+                    </form>
+                    <form action="/logout" method="post" style="display:inline;">
+                        <button type="submit" class="action-button">Logout</button>
                     </form>
                 </div>
             </div>
