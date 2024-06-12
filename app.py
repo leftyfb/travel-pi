@@ -298,13 +298,14 @@ def index():
                     </li>
             """
         elif conn_type == 'vpn':  # Display VPN connections
+            vpn_ip_address = get_ip_address("ppp0")
             dropdowndisplay += f"""
                     <li>
                         <form action="/disconnect" method="post" style="display:inline;">
                             <input type="hidden" name="connection" value="{name}">
                             <button type="submit" class="icon-btn"><i class="fas fa-times-circle"></i></button>
                         </form>
-                        {name} (VPN) - IP: {ip_address}
+                        {name} (VPN) - IP: {vpn_ip_address}
                     </li>
             """
         elif conn_type == '802-3-ethernet':  # Display Ethernet connections
