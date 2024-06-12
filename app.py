@@ -355,6 +355,7 @@ login_page = """
 <html>
 <head>
     <title>Login</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -372,7 +373,8 @@ login_page = """
             padding: 20px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             border-radius: 10px;
-            width: 300px;
+            width: 90%;
+            max-width: 400px;
             text-align: center;
         }
         h1 {
@@ -386,6 +388,7 @@ login_page = """
             display: block;
             margin-bottom: 8px;
             color: #555;
+            text-align: left;
         }
         input[type="text"], input[type="password"] {
             padding: 10px;
@@ -413,6 +416,15 @@ login_page = """
         .error {
             color: #f44336;
             margin-bottom: 10px;
+        }
+        @media (max-width: 600px) {
+            .login-container {
+                width: 90%;
+                padding: 15px;
+            }
+            input[type="text"], input[type="password"], input[type="submit"] {
+                font-size: 14px;
+            }
         }
     </style>
 </head>
