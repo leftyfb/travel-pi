@@ -23,7 +23,7 @@ def run_command(command):
         return None, error_message
 
 def get_wifi_networks():
-    command = ["nmcli", "--colors", "no", "-m", "multiline", "--get-value", "SSID", "dev", "wifi", "list"]
+    command = ["nmcli", "--colors", "no", "-m", "multiline", "--get-value", "SSID", "dev", "wifi", "list", "ifname", "wlan1"]
     result, error = run_command(command)
     if result:
         ssids_list = result.split('\n')
@@ -464,9 +464,9 @@ def submit():
     known_ssid = request.form.get('known_ssid')
     
     if known_ssid and known_ssid != "":
-        connection_command = ["nmcli", "--colors", "no", "connection", "up", known_ssid]
+        connection_command = ["nmcli", "--colors", "no", "connection", "up", known_ssid, "ifname", "wlan1"]
     elif ssid and ssid != "":
-        connection_command = ["nmcli", "--colors", "no", "device", "wifi", "connect", ssid]
+        connection_command = ["nmcli", "--colors", "no", "device", "wifi", "connect", ssid, "ifname", "wlan1"]
         if password and password != "":
             connection_command += ["password", f'"{password}"']
     else:
