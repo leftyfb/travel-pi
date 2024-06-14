@@ -468,7 +468,7 @@ def submit():
     elif ssid and ssid != "":
         connection_command = ["nmcli", "--colors", "no", "device", "wifi", "connect", ssid, "ifname", "wlan1"]
         if password and password != "":
-            connection_command += ["password", f'"{password}"']
+            connection_command += ["password", password]  # Append password as a separate argument
     else:
         messages.append("Error: No SSID or known network selected.")
         return redirect(url_for('index'))
